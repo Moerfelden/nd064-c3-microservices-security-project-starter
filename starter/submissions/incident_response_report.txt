@@ -1,0 +1,25 @@
+1. Incident commander name:
+   Magnus Rothe
+
+2. Executive Summary of what happened:
+   The attacker managed to run crypto miners on our system, which is undesirable.
+   Three pods were created in our Kubernetes cluster, each running a different cryptocurrency mining application (Monero CPU miner pool, Minergate, and CryptoNight).
+
+3. Summary of what was affected:
+   The Kubernetes cluster was affected: the attacker was able to get control of the Kubernetes cluster and execute the pods with kubectl. 
+   They either have access to an administrative terminal and the kubeconfig file, or maybe they have taken over the UI.
+
+4. Summary of the impact:
+   Each of these pods will consume resources (CPU and memory) on the nodes in our Kubernetes cluster, as they are designed to perform crypto-mining operations.
+   Increased CPU and memory utilization results in higher costs while simultaneously degrading the performance and stability of the entire cluster. 
+   Additionally, the presence of crypto miners expands the attack surface due to their inherent security vulnerabilities.
+
+5. Summary of the remediation steps:
+   The administrator noticed the event through Grafana monitoring and evicted the crypto mining pods.
+   Once the pods have been evicted, CPU utilization begins to decrease, and no additional alerts related to crypto mining are triggered.
+
+6. Summary of lessons learned:
+   Attackers are after compute resources to abuse for crypto-mining. Hence, we should review access to the Kubernetes API server from administrative terminals. 
+   Admission controllers can be configured to disallow unknown images to be used to create containers.
+   It is also good to have monitoring like the dashboards we use. Falco generates security  alerts in Grafana for events like this.
+    
